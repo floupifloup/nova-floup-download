@@ -277,6 +277,15 @@ def quality_to_format(fmt, quality):
     }
     return q_map.get(quality, "bestvideo+bestaudio/best")
 
+def get_cookies_file():
+    """Écrit les cookies depuis la variable d'environnement dans un fichier temp."""
+    cookies_content = os.environ.get("YOUTUBE_COOKIES", "")
+    if not cookies_content:
+        return None
+    cookies_path = Path(tempfile.gettempdir()) / "yt_cookies.txt"
+    cookies_path.write_text(cookies_content)
+    return str(cookies_path)
+
 def run_download(task_id, url, fmt, quality):
     task_dir = DOWNLOAD_DIR / task_id
     task_dir.mkdir(exist_ok=True)
@@ -302,6 +311,11 @@ def run_download(task_id, url, fmt, quality):
     }
     if fmt == "mp3":
         ydl_opts["postprocessors"] = [{"key": "FFmpegExtractAudio", "preferredcodec": "mp3", "preferredquality": "192"}]
+
+    # Ajouter les cookies si disponibles
+    cookies_file = get_cookies_file()
+    if cookies_file:
+        ydl_opts["cookiefile"] = cookies_file
 
     try:
         tasks[task_id].update({"message": "Récupération des infos vidéo...", "progress": 5})

@@ -270,12 +270,7 @@ class DownloadRequest(BaseModel):
 def quality_to_format(fmt, quality):
     if fmt == "mp3":
         return "bestaudio/best"
-    q_map = {
-        "720p":  "bestvideo[height<=720]+bestaudio/bestvideo[height<=720]/best",
-        "1080p": "bestvideo[height<=1080]+bestaudio/bestvideo[height<=1080]/best",
-        "4k":    "bestvideo[height<=2160]+bestaudio/bestvideo+bestaudio/best",
-    }
-    return q_map.get(quality, "bestvideo+bestaudio/best")
+    return "best"
 
 def get_cookies_file():
     """Écrit les cookies depuis la variable d'environnement dans un fichier temp."""

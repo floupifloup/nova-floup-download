@@ -372,6 +372,23 @@ def get_file(task_id: str):
 def health():
     return {"status": "ok"}
 
+@app.get("/debug-cookies")
+def debug_cookies():
+    raw = os.environ.get("YOUTUBE_COOKIES", "")
+    cookies_file = get_cookies_file()
+    file_content = ""
+    if cookies_file:
+        try:
+            file_content = Path(cookies_file).read_text()[:200]
+        except:
+            file_content = "erreur lecture fichier"
+    return {
+        "env_var_length": len(raw),
+        "env_var_start": raw[:100] if raw else "VIDE",
+        "cookies_file": cookies_file,
+        "file_preview": file_content,
+    }
+
 if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8000))

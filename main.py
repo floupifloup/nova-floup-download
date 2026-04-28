@@ -317,12 +317,16 @@ def run_download(task_id, url, fmt, quality):
     if cookies_file:
         ydl_opts["cookiefile"] = cookies_file
     
-    # Options anti-bot
-    ydl_opts["http_headers"] = {
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
+    # Utiliser le client TV pour contourner les restrictions datacenter
+    ydl_opts["extractor_args"] = {
+        "youtube": {
+            "player_client": ["tv_embedded", "web", "android"],
+            "player_skip": ["webpage"],
+        }
     }
-    ydl_opts["extractor_args"] = {"youtube": {"player_client": ["web"]}}
+    ydl_opts["http_headers"] = {
+        "User-Agent": "Mozilla/5.0 (SMART-TV; Linux; Tizen 6.0) AppleWebKit/538.1 (KHTML, like Gecko) Version/6.0 TV Safari/538.1",
+    }
 
     try:
         tasks[task_id].update({"message": "Récupération des infos vidéo...", "progress": 5})

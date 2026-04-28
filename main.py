@@ -271,9 +271,9 @@ def quality_to_format(fmt, quality):
     if fmt == "mp3":
         return "bestaudio/best"
     q_map = {
-        "720p": "bestvideo[height<=720]+bestaudio/best[height<=720]",
-        "1080p": "bestvideo[height<=1080]+bestaudio/best[height<=1080]",
-        "4k": "bestvideo[height<=2160]+bestaudio/best",
+        "720p":  "bestvideo[height<=720]+bestaudio/bestvideo[height<=720]/best",
+        "1080p": "bestvideo[height<=1080]+bestaudio/bestvideo[height<=1080]/best",
+        "4k":    "bestvideo[height<=2160]+bestaudio/bestvideo+bestaudio/best",
     }
     return q_map.get(quality, "bestvideo+bestaudio/best")
 

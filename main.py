@@ -282,8 +282,13 @@ def get_cookies_file():
     cookies_content = os.environ.get("YOUTUBE_COOKIES", "")
     if not cookies_content:
         return None
+    # Corriger les \n littéraux en vrais sauts de ligne
+    cookies_content = cookies_content.replace("\\n", "\n").replace("\n", "\n")
+    # S'assurer que le fichier Netscape est bien formé
+    if not cookies_content.strip().startswith("# Netscape"):
+        cookies_content = "# Netscape HTTP Cookie File\n" + cookies_content
     cookies_path = Path(tempfile.gettempdir()) / "yt_cookies.txt"
-    cookies_path.write_text(cookies_content)
+    cookies_path.write_text(cookies_content, encoding="utf-8")
     return str(cookies_path)
 
 def run_download(task_id, url, fmt, quality):
@@ -316,6 +321,13 @@ def run_download(task_id, url, fmt, quality):
     cookies_file = get_cookies_file()
     if cookies_file:
         ydl_opts["cookiefile"] = cookies_file
+    
+    # Options anti-bot
+    ydl_opts["http_headers"] = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
+    }
+    ydl_opts["extractor_args"] = {"youtube": {"player_client": ["web"]}}
 
     try:
         tasks[task_id].update({"message": "Récupération des infos vidéo...", "progress": 5})
